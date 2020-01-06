@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'dart:convert';
 import '../services/service_method.dart';
 
@@ -23,11 +24,16 @@ class _HomePageState extends State<HomePage> {
             var data = json.decode(snapshot.data.toString());
             List<Map> swiper = (data['data']['slides'] as List).cast();
             List<Map> navigatorList = (data['data']['category'] as List).cast();
+            String adPicture = data['data']['advertesPicture']['PICTURE_ADDRESS'];
+            String leaderImage = data['data']['shopInfo']['leaderImage'];
+            String leaderPhone = data['data']['shopInfo']['leaderPhone'];
 
             return Column(
               children: <Widget>[
                 CustomSwiper(swiperDataList: swiper),
                 TopNavigator(navigatorList: navigatorList),
+                AdBanner(adPicture: adPicture),
+                LeaderPhone(leaderImage: leaderImage, leaderPhone: leaderPhone),
               ],
             );
           } else {
@@ -67,6 +73,7 @@ class CustomSwiper extends StatelessWidget {
   }
 }
 
+// 种类导航
 class TopNavigator extends StatelessWidget {
   final List navigatorList;
   TopNavigator({Key key, this.navigatorList}): super(key: key);
@@ -99,6 +106,45 @@ class TopNavigator extends StatelessWidget {
         children: navigatorList.map((item) {
           return _gridViewItemUI(context, item);
         }).toList(),
+      ),
+    );
+  }
+}
+
+// 广告 Banner
+class AdBanner extends StatelessWidget {
+  final String adPicture;
+  AdBanner({Key key, this.adPicture}): super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Image.network(adPicture),
+    );
+  }
+}
+
+// 店长电话
+class LeaderPhone extends StatelessWidget {
+  final String leaderImage;
+  final String leaderPhone;
+  LeaderPhone({Key key, this.leaderImage, this.leaderPhone}): super(key: key);
+
+  void _launcherURL() async {
+    String url = 'tel:' + leaderPhone;
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: InkWell(
+        onTap: _launcherURL,
+        child: Image.network(leaderImage),
       ),
     );
   }
