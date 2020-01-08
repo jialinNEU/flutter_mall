@@ -9,7 +9,18 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
+// class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
+  // @override
+  // bool get wantKeepAlive => true;
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   print('1111');
+  // }
+  
 class _HomePageState extends State<HomePage> {
+
   String homePageContent = '正在获取数据';
 
   @override
@@ -27,14 +38,18 @@ class _HomePageState extends State<HomePage> {
             String adPicture = data['data']['advertesPicture']['PICTURE_ADDRESS'];
             String leaderImage = data['data']['shopInfo']['leaderImage'];
             String leaderPhone = data['data']['shopInfo']['leaderPhone'];
+            List<Map> recommendList = (data['data']['recommend'] as List).cast();
 
-            return Column(
-              children: <Widget>[
-                CustomSwiper(swiperDataList: swiper),
-                TopNavigator(navigatorList: navigatorList),
-                AdBanner(adPicture: adPicture),
-                LeaderPhone(leaderImage: leaderImage, leaderPhone: leaderPhone),
-              ],
+            return SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  CustomSwiper(swiperDataList: swiper),
+                  TopNavigator(navigatorList: navigatorList),
+                  AdBanner(adPicture: adPicture),
+                  LeaderPhone(leaderImage: leaderImage, leaderPhone: leaderPhone),
+                  RecommendProducts(recommendList: recommendList),
+                ],
+              ),
             );
           } else {
             return Center(
@@ -145,6 +160,83 @@ class LeaderPhone extends StatelessWidget {
       child: InkWell(
         onTap: _launcherURL,
         child: Image.network(leaderImage),
+      ),
+    );
+  }
+}
+
+// 商品推荐
+class RecommendProducts extends StatelessWidget {
+  final List recommendList;
+  RecommendProducts({Key key, this.recommendList}): super(key: key);
+
+  Widget _titleWidget() {
+    return Container(
+      alignment: Alignment.centerLeft,
+      padding: EdgeInsets.fromLTRB(10.0, 2.0, 0, 5.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          bottom: BorderSide(width: 1, color: Colors.black12)
+        ),
+      ),
+      child: Text(
+        '商品推荐',
+        style: TextStyle(color: Colors.pink),
+      ),
+    );
+  }
+
+  Widget _productItem(index) {
+    return InkWell(
+      onTap: (){},
+      child: Container(
+        width: ScreenUtil().setWidth(250),
+        height: ScreenUtil().setHeight(330),
+        padding: EdgeInsets.all(8.0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border(
+            left: BorderSide(width: 1, color: Colors.black12),
+          ),
+        ),
+        child: Column(
+          children: <Widget>[
+            Image.network(recommendList[index]['image']),
+            Text('￥${recommendList[index]['mallPrice']}'),
+            Text(
+              '￥${recommendList[index]['price']}',
+              style: TextStyle(decoration: TextDecoration.lineThrough, color: Colors.grey),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _products() {
+    return Container(
+      height: ScreenUtil().setHeight(330),
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: recommendList.length,
+        itemBuilder: (context, index) {
+          return _productItem(index);
+        },
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: ScreenUtil().setHeight(380),
+      margin: EdgeInsets.only(top: 10.0),
+      child: Column(
+        children: <Widget>[
+          _titleWidget(),
+          _products(),
+        ],
       ),
     );
   }

@@ -1,0 +1,41 @@
+【dart】
+
+dart:convert
+  - json.decode()
+dart:io
+  - ContentType
+dart:async
+  - async/await
+
+extend...with...
+
+
+*********************************
+【packages】
+
+flutter_screenutil
+  - 见CustomSwiper及IndexPage
+
+flutter_swiper
+  - 见CustomSwiper
+
+url_launcher(flutter plugin)
+  - 见LeaderPhone Widget
+
+dio(data fetch)
+
+
+*********************************
+【Widgets】
+
+IndexStack(IndexPage中)
+
+FutureBuilder
+
+SingleChildScrollView
+
+Image.network
+
+InkWell
+
+AutomaticKeepAliveClientMixin(配合混入使用)
