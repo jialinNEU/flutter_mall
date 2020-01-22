@@ -11,6 +11,8 @@ extend...with...
 
 可选参数：使用{}括起来即可，调用的时候需要指明key，即 myMethod(key: value);
 
+数据模型Model（假设为TestModel），TestModel.fromJson（）
+
 
 *********************************
 【packages】
@@ -45,3 +47,11 @@ InkWell
 AutomaticKeepAliveClientMixin(配合混入使用)
 
 Wrap - Warp是一种流式布局。GridView组件也是流式布局，但性能是很低的，毕竟网格的绘制不难么简单
+
+
+*********************************
+【其他】
+
+1. 创建Widget的几种方法（参考home_page.dart）
+2. 模型层的建立（参考category_page.dart, models/category.dart）
+3. https://javiercbk.github.io/json_to_dart/ json_to_dart 帮助从json写出数据模型
