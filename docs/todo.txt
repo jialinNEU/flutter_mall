@@ -9,6 +9,8 @@ dart:async
 
 extend...with...
 
+可选参数：使用{}括起来即可，调用的时候需要指明key，即 myMethod(key: value);
+
 
 *********************************
 【packages】
@@ -30,7 +32,7 @@ dio(data fetch)
 
 IndexStack(IndexPage中)
 
-FutureBuilder
+FutureBuilder：(context, snapshot) => {}
 
 SingleChildScrollView
 
@@ -39,3 +41,5 @@ Image.network
 InkWell
 
 AutomaticKeepAliveClientMixin(配合混入使用)
+
+Wrap - Warp是一种流式布局。GridView组件也是流式布局，但性能是很低的，毕竟网格的绘制不难么简单

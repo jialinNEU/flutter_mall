@@ -11,7 +11,7 @@ class IndexPage extends StatefulWidget {
 }
 
 class _IndexPageState extends State<IndexPage> {
-  //
+
   final List<BottomNavigationBarItem> bottomTabs = [
     BottomNavigationBarItem(
       icon: Icon(CupertinoIcons.home),
@@ -31,12 +31,12 @@ class _IndexPageState extends State<IndexPage> {
     ),
   ];
 
-  final List tabBodies = [
+  final List<Widget> tabBodies = [
     HomePage(),
     CategoryPage(),
     CartPage(),
     MemberPage(),
-  ];
+  ].cast<Widget>();
 
   int currentIndex = 0;
   var currentPage;
@@ -63,11 +63,11 @@ class _IndexPageState extends State<IndexPage> {
           });
         },
       ),
-      body: currentPage,
-      // body: IndexedStack(
-      //   index: currentIndex,
-      //   children: tabBodies,
-      // ),
+      // body: currentPage,
+      body: IndexedStack(
+        index: currentIndex,
+        children: tabBodies,
+      ),
     );
   }
 }

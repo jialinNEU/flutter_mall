@@ -9,26 +9,30 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-// class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
-  // @override
-  // bool get wantKeepAlive => true;
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   print('1111');
-  // }
+class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
+  int page = 1;
+  List<Map> hotGoodsList = [];
   
-class _HomePageState extends State<HomePage> {
+  @override
+  bool get wantKeepAlive => true;
 
-  String homePageContent = '正在获取数据';
+  @override
+  void initState() {
+    super.initState();
+    _getHotGoods();
+  }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+    var formData = {
+      'lon': '115.02932',
+      'lat': '35.76189',
+    };
     return Scaffold(
       appBar: AppBar(title: Text('百姓生活+')),
       body: FutureBuilder(
-        future: getHomePageContent(),
+        future: request('homePageContent', formData: formData),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             // 数据处理
@@ -39,6 +43,12 @@ class _HomePageState extends State<HomePage> {
             String leaderImage = data['data']['shopInfo']['leaderImage'];
             String leaderPhone = data['data']['shopInfo']['leaderPhone'];
             List<Map> recommendList = (data['data']['recommend'] as List).cast();
+            String pictureAddress1 = data['data']['floor1Pic']['PICTURE_ADDRESS'];
+            String pictureAddress2 = data['data']['floor2Pic']['PICTURE_ADDRESS'];
+            String pictureAddress3 = data['data']['floor3Pic']['PICTURE_ADDRESS'];
+            List<Map> floorGoodsList1 = (data['data']['floor1'] as List).cast();
+            List<Map> floorGoodsList2 = (data['data']['floor2'] as List).cast();
+            List<Map> floorGoodsList3 = (data['data']['floor3'] as List).cast();
 
             return SingleChildScrollView(
               child: Column(
@@ -48,6 +58,13 @@ class _HomePageState extends State<HomePage> {
                   AdBanner(adPicture: adPicture),
                   LeaderPhone(leaderImage: leaderImage, leaderPhone: leaderPhone),
                   RecommendProducts(recommendList: recommendList),
+                  FloorTitle(pictureAddress: pictureAddress1),
+                  FloorContent(floorGoodsList: floorGoodsList1),
+                  FloorTitle(pictureAddress: pictureAddress2),
+                  FloorContent(floorGoodsList: floorGoodsList2),
+                  FloorTitle(pictureAddress: pictureAddress3),
+                  FloorContent(floorGoodsList: floorGoodsList3),
+                  _renderHotGoods(),
                 ],
               ),
             );
@@ -60,6 +77,77 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+
+  void _getHotGoods() {
+    var formData = { 'page': page };
+    request('homePageBelowContent', formData: formData).then((val) {
+      var data = json.decode(val.toString());
+      List<Map> newGoodsList = (data['data'] as List).cast();
+      setState(() {
+        hotGoodsList.addAll(newGoodsList);
+        page++;
+      });
+    });
+  }
+
+  Widget hotGoodsTitle = Container(
+    margin: EdgeInsets.only(top: 10.0),
+    padding: EdgeInsets.all(5.0),
+    alignment: Alignment.center,
+    color: Colors.transparent,
+    child: Text('火爆专区'),
+  );
+
+  Widget _hotGoodsList() {
+    if (hotGoodsList.length != 0) {
+      List<Widget> listGoodsWidget = hotGoodsList.map((val) {
+        return InkWell(
+          onTap: () { print('点击了热门商品'); },
+          child: Container(
+            width: ScreenUtil().setWidth(372),
+            color: Colors.white,
+            padding: EdgeInsets.all(5.0),
+            margin: EdgeInsets.only(bottom: 3.0),
+            child: Column(
+              children: <Widget>[
+                Image.network(val['image'], width: ScreenUtil().setWidth(370)),
+                Text(
+                  val['name'],
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(color: Colors.pink, fontSize: ScreenUtil().setSp(26)),
+                ),
+                Row(
+                  children: <Widget>[
+                    Text('￥${val['mallPrice']}'),
+                    Text('￥${val['price']}', style: TextStyle(color: Colors.black26, decoration: TextDecoration.lineThrough)),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      }).toList();
+
+      return Wrap(
+        spacing: 2,
+        children: listGoodsWidget,
+      );
+    } else {
+      return Text('');
+    }
+  }
+
+  Widget _renderHotGoods() {
+  return Container(
+    child: Column(
+      children: <Widget>[
+        hotGoodsTitle,
+        _hotGoodsList(),
+      ],
+    ),
+  );
+}
 }
 
 // 首页轮播组件
@@ -241,3 +329,69 @@ class RecommendProducts extends StatelessWidget {
     );
   }
 }
+
+// 楼层标题
+class FloorTitle extends StatelessWidget {
+  final String pictureAddress;
+
+  FloorTitle({Key key, this.pictureAddress}): super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(8.0),
+      child: Image.network(pictureAddress),
+    );
+  }
+}
+
+// 楼层商品
+class FloorContent extends StatelessWidget {
+  final List floorGoodsList;
+
+  FloorContent({Key key, this.floorGoodsList}): super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(
+        children: <Widget>[
+          _firstRow(),
+          _otherGoods(),
+        ],
+      ),
+    );
+  }
+
+  Widget _firstRow() {
+    return Row(
+      children: <Widget>[
+        _goodsItem(floorGoodsList[1]),
+        _goodsItem(floorGoodsList[2]),
+      ],
+    );
+  }
+
+  Widget _otherGoods() {
+    return Row(
+      children: <Widget>[
+        _goodsItem(floorGoodsList[3]),
+        _goodsItem(floorGoodsList[4]),
+      ],
+    );
+  }
+
+  Widget _goodsItem(Map goods) {
+    return Container(
+      width: ScreenUtil().setWidth(375),
+      child: InkWell(
+        onTap: () { print('点击了楼层'); },
+        child: Image.network(goods['image']),
+      ),
+    );
+  }
+}
+
+
+
+//
