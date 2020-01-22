@@ -26,6 +26,8 @@ url_launcher(flutter plugin)
 
 dio(data fetch)
 
+flutter_easyfresh 上拉加载
+
 
 *********************************
 【Widgets】

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'dart:convert';
 import '../services/service_method.dart';
 
@@ -12,6 +13,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
   int page = 1;
   List<Map> hotGoodsList = [];
+
+  GlobalKey<RefreshFooterState> _footerKey = new GlobalKey<RefreshFooterState>();
   
   @override
   bool get wantKeepAlive => true;
@@ -19,7 +22,6 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
   @override
   void initState() {
     super.initState();
-    _getHotGoods();
   }
 
   @override
@@ -50,8 +52,9 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
             List<Map> floorGoodsList2 = (data['data']['floor2'] as List).cast();
             List<Map> floorGoodsList3 = (data['data']['floor3'] as List).cast();
 
-            return SingleChildScrollView(
-              child: Column(
+            // 上拉加载
+            return EasyRefresh(
+              child: ListView(
                 children: <Widget>[
                   CustomSwiper(swiperDataList: swiper),
                   TopNavigator(navigatorList: navigatorList),
@@ -67,6 +70,28 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
                   _renderHotGoods(),
                 ],
               ),
+              loadMore: () async {
+                print('开始加载更多');
+                var formData = { 'page': page };
+                await request('homePageBelowContent', formData: formData).then((val) {
+                  var data = json.decode(val.toString());
+                  List<Map> newGoodsList = (data['data'] as List).cast();
+                  setState(() {
+                    hotGoodsList.addAll(newGoodsList);
+                    page++;
+                  });
+                });
+              },
+              refreshFooter: ClassicsFooter(
+                key: _footerKey,
+                bgColor: Colors.white,
+                textColor: Colors.pink,
+                moreInfoColor: Colors.pink,
+                showMore: true,
+                noMoreText: '',
+                moreInfo: '加载中',
+                loadReadyText: '上拉加载',
+              ),
             );
           } else {
             return Center(
@@ -76,18 +101,6 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
         },
       ),
     );
-  }
-
-  void _getHotGoods() {
-    var formData = { 'page': page };
-    request('homePageBelowContent', formData: formData).then((val) {
-      var data = json.decode(val.toString());
-      List<Map> newGoodsList = (data['data'] as List).cast();
-      setState(() {
-        hotGoodsList.addAll(newGoodsList);
-        page++;
-      });
-    });
   }
 
   Widget hotGoodsTitle = Container(
@@ -130,7 +143,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
       }).toList();
 
       return Wrap(
-        spacing: 2,
+        spacing: 2, // 两列
         children: listGoodsWidget,
       );
     } else {
