@@ -30,6 +30,15 @@ dio(data fetch)
 
 flutter_easyfresh 上拉加载
 
+flutter_provide 状态管理
+
+-- 现有状态管理方案：Redux(咸鱼fish redux)，Bloc，Provide（Google）
+
+-- class *** with ChangeNotifier {}
+
+-- providers..provide(Provider<Counter>.value(counter)); // 需要解释
+
+
 
 *********************************
 【Widgets】
@@ -55,3 +64,58 @@ Wrap - Warp是一种流式布局。GridView组件也是流式布局，但性能�
 1. 创建Widget的几种方法（参考home_page.dart）
 2. 模型层的建立（参考category_page.dart, models/category.dart）
 3. https://javiercbk.github.io/json_to_dart/ json_to_dart 帮助从json写出数据模型
+
+如何构建Provide
+
+- 安装provide依赖
+- 在/provide下创建文件
+
+import 'package:flutter/material.dart';
+import '../models/category.dart';
+
+class ChildCategory with ChangeNotifier {
+  List<BxMallSubDto> childCategoryList = [];
+
+  // 对象化，声明一个泛型的 List 变量，然后使用 function 进行赋值
+  getChildCategory(List list) {
+    childCategoryList = list;
+    notifyListeners();
+  }
+}
+
+- 在main.dart中引入（main函数）
+
+  var counter = Counter();
+  var childCategory = ChildCategory();
+  var providers = Providers();
+  providers
+    ..provide(Provider<Counter>.value(counter)) // 将 provide 和 counter 引入程序顶层
+    ..provide(Provider<ChildCategory>.value(childCategory));
+  runApp(
+    ProviderNode(
+      child: MyApp(),
+      providers: providers,
+    )
+  );
+
+- 在State build方法return的最外层添加 Provide Widget
+
+class _RightCategoryNavState extends State<RightCategoryNav> {
+  List list = ['名酒', '宝丰', '北京二锅头', '舍得', '五粮液', '茅台', '散白'];
+
+  @override
+  void initState() {
+    super.initState();
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Provide<ChildCategory>(
+        builder: (context, child, childCategory) { // 此处的childCategory就是/provide/child_category.dart中ChildCategory类的实例化对象
+          return Container();
+        },
+      ),
+    );
+  }
+
