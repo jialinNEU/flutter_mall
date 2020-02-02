@@ -38,6 +38,7 @@ flutter_provide 状态管理
 
 -- providers..provide(Provider<Counter>.value(counter)); // 需要解释
 
+fluttertoast 用户提示组件
 
 
 *********************************
@@ -58,6 +59,8 @@ AutomaticKeepAliveClientMixin(配合混入使用)
 Wrap - Warp是一种流式布局。GridView组件也是流式布局，但性能是很低的，毕竟网格的绘制不难么简单
 
 Expanded widget - 让子Widget有伸缩能力的部件，继承自Flexible
+
+ScrollController类 - 切换tab后回到顶部
 
 
 *********************************
