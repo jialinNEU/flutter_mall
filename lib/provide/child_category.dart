@@ -20,7 +20,7 @@ class ChildCategory with ChangeNotifier {
     noMoreText = '';
 
     BxMallSubDto all = BxMallSubDto();
-    all.mallSubId = '00';
+    all.mallSubId = '';
     all.mallCategoryId = '00';
     all.mallSubName = '全部';
     all.comments = 'null';
