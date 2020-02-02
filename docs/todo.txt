@@ -132,4 +132,10 @@ class _RightCategoryNavState extends State<RightCategoryNav> {
 
 
 ---------------------------------------
-详情页/购物车/
+详情页
+
+1. 建立路由以及占位页面
+2. 建立 Model
+3. 建立 Provide，将 data fetch 操作放在 provide 中
+4. 调试接口
+5. 搭建 UI
