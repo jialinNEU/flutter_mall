@@ -40,6 +40,10 @@ flutter_provide 状态管理
 
 fluttertoast 用户提示组件
 
+fluro 页面路由
+
+-- handler文件是每个路由的规则文件
+
 
 *********************************
 【Widgets】
@@ -124,3 +128,8 @@ class _RightCategoryNavState extends State<RightCategoryNav> {
     );
   }
 
+
+
+
+---------------------------------------
+详情页/购物车/

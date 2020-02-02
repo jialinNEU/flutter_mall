@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'dart:convert';
 import '../services/service_method.dart';
+import '../routers/application.dart';
 
 class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
@@ -115,7 +116,9 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
     if (hotGoodsList.length != 0) {
       List<Widget> listGoodsWidget = hotGoodsList.map((val) {
         return InkWell(
-          onTap: () { print('点击了热门商品'); },
+          onTap: () {
+            Application.router.navigateTo(context, "/details?id=${val['goodsId']}");
+          },
           child: Container(
             width: ScreenUtil().setWidth(372),
             color: Colors.white,
