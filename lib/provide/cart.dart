@@ -7,6 +7,9 @@ class CartProvide with ChangeNotifier {
   String cartString = '[]'; // shared_preferences 不支持对象持久化，因此使用 cartString 再转换到 cartList 中
   List<CartInfoModel> cartList = [];
 
+  double totalPrice = 0;
+  int totalGoodsCount = 0;
+
   // 将商品添加到购物车
   save(goodsId, goodsName, count, price, images) async {
     // 初始化 SharedPreferences
@@ -38,6 +41,7 @@ class CartProvide with ChangeNotifier {
         'count': count,
         'price': price,
         'images': images,
+        'isCheck': true,
       };
       tempList.add(newGoods);
       cartList.add(new CartInfoModel.fromJson(newGoods));
@@ -45,8 +49,6 @@ class CartProvide with ChangeNotifier {
 
     // 持久化
     cartString = json.encode(tempList).toString();
-    print(cartString);
-    print(cartList.toString());
     prefs.setString('cartInfo', cartString);
     notifyListeners();
   }
@@ -59,10 +61,44 @@ class CartProvide with ChangeNotifier {
       cartList = [];
     } else {
       List<Map> tempList = (json.decode(cartString.toString()) as List).cast();
+      totalPrice = 0;
+      totalGoodsCount = 0;
+
       tempList.forEach((item) {
+        if (item['isCheck']) {
+          totalPrice += (item['count'] * item['price']);
+          totalGoodsCount += item['count'];
+        }
         cartList.add(new CartInfoModel.fromJson(item));
       });
     }
+    notifyListeners();
+  }
+
+
+  // 删除购物车中的指定商品
+  deleteSingleCartItem(String goodsId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    cartString = prefs.getString('cartInfo');
+    List<Map> tempList = (json.decode(cartString.toString()) as List).cast();
+
+    int tempIndex = 0;
+    int delIndex = 0;
+
+    tempList.forEach((item) {
+      if (item['goodsId'] == goodsId) {
+        delIndex = tempIndex;
+      }
+      tempIndex++;
+    });
+
+    /* dart语言不支持迭代的时候进行修改或删除，因此在循环结束后才删除 */
+
+    tempList.removeAt(delIndex);
+    cartString = json.encode(tempList).toString();
+    prefs.setString('cartInfo', cartString);
+    await getCartInfo();
+    notifyListeners();
   }
 
   // 清空购物车

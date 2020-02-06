@@ -18,12 +18,18 @@ class CartPage extends StatelessWidget{
           if (snapshot.hasData && cartList != null) {
             return Stack(
               children: <Widget>[
-                ListView.builder(
-                  itemCount: cartList.length,
-                  itemBuilder: (context, index) {
-                    return CartItem(cartList[index]);
-                  }
+                Provide<CartProvide>(
+                  builder: (context, child, val) {
+                    cartList = Provide.value<CartProvide>(context).cartList;
+                    return ListView.builder(
+                      itemCount: cartList.length,
+                      itemBuilder: (context, index) {
+                        return CartItem(cartList[index]);
+                      }
+                    );
+                  },
                 ),
+               
                 Positioned(
                   bottom: 0,
                   left: 0,
@@ -67,7 +73,7 @@ class CartItem extends StatelessWidget {
           _cartCheckBtn(item),
           _cartGoodsImage(item),
           _cartGoodsName(item),
-          _cartGoodsPrice(item),
+          _cartGoodsPrice(context, item),
         ],
       ),
     );
@@ -77,7 +83,7 @@ class CartItem extends StatelessWidget {
   Widget _cartCheckBtn(item) {
     return Container(
       child: Checkbox(
-        value: true,
+        value: item.isCheck,
         activeColor: Colors.pink,
         onChanged: (bool val) {},
       ),
@@ -104,14 +110,15 @@ class CartItem extends StatelessWidget {
       alignment: Alignment.topLeft,
       child: Column(
         children: <Widget>[
-          Text(item.goodsName)
+          Text(item.goodsName),
+          CartCount(),
         ],
       ),
     );
   }
 
   // 商品价格
-  Widget _cartGoodsPrice(item) {
+  Widget _cartGoodsPrice(context, item) {
     return Container(
       width:ScreenUtil().setWidth(150) ,
       alignment: Alignment.centerRight,
@@ -120,7 +127,9 @@ class CartItem extends StatelessWidget {
           Text('￥${item.price}'),
           Container(
             child: InkWell(
-              onTap: () {},
+              onTap: () {
+                Provide.value<CartProvide>(context).deleteSingleCartItem(item.goodsId);
+              },
               child: Icon(
                 Icons.delete_forever,
                 color: Colors.black26,
@@ -144,15 +153,16 @@ class CartBottom extends StatelessWidget {
       color: Colors.white,
       child: Row(
         children: <Widget>[
-          _selectAllBtn(),
-          _totalPriceArea(),
-          _caculateBtn(),
+          _selectAllBtn(context),
+          _totalPriceArea(context),
+          _caculateBtn(context),
         ],
       ),
     );
   }
 
-  Widget _selectAllBtn() {
+  Widget _selectAllBtn(context) {
+
     return Container(
       child: Row(
         children: <Widget>[
@@ -167,7 +177,8 @@ class CartBottom extends StatelessWidget {
     );
   }
 
-  Widget _totalPriceArea() {
+  Widget _totalPriceArea(context) {
+    double totalPrice = Provide.value<CartProvide>(context).totalPrice;
     return Container(
       width: ScreenUtil().setWidth(430),
       alignment: Alignment.centerRight,
@@ -189,7 +200,7 @@ class CartBottom extends StatelessWidget {
                 width: ScreenUtil().setWidth(150),
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  '￥1922',
+                  '￥$totalPrice',
                   style:TextStyle(
                     fontSize: ScreenUtil().setSp(36),
                     color: Colors.red,
@@ -214,7 +225,8 @@ class CartBottom extends StatelessWidget {
     );
   }
 
-  Widget _caculateBtn() {
+  Widget _caculateBtn(context) {
+    int totalGoodsCount = Provide.value<CartProvide>(context).totalGoodsCount;
     return Container(
       width: ScreenUtil().setWidth(160),
       padding: EdgeInsets.only(left: 10),
@@ -228,13 +240,84 @@ class CartBottom extends StatelessWidget {
              borderRadius: BorderRadius.circular(3.0)
           ),
           child: Text(
-            '结算(6)',
+            '结算($totalGoodsCount)',
             style: TextStyle(
               color: Colors.white
             ),
           ),
         ),
       ) ,
+    );
+  }
+}
+
+
+class CartCount extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: ScreenUtil().setWidth(165),
+      margin: EdgeInsets.only(top:5.0),
+      decoration: BoxDecoration(
+        border:Border.all(width: 1, color: Colors.black12)
+      ),
+      child: Row(
+        children: <Widget>[
+          _reduceItemBtn(),
+          _countArea(),
+          _addItemBtn(),
+        ],
+      ),
+    );
+  }
+
+  // 减少商品按钮
+  Widget _reduceItemBtn() {
+    return InkWell(
+      onTap: () {},
+      child: Container(
+        width: ScreenUtil().setWidth(45),
+        height: ScreenUtil().setHeight(45),
+        alignment: Alignment.center,
+
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border(
+            right: BorderSide(width: 1, color: Colors.black12),
+          )
+        ),
+        child: Text('-'),
+      ),
+    );
+  }
+
+  // 添加商品按钮
+  Widget _addItemBtn(){
+    return InkWell(
+      onTap: () {},
+      child: Container(
+        width: ScreenUtil().setWidth(45),
+        height: ScreenUtil().setHeight(45),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border(
+            left: BorderSide(width: 1, color: Colors.black12),
+          ),
+        ),
+        child: Text('+'),
+      ),
+    );
+  }
+
+  // 商品数量
+  Widget _countArea(){
+    return Container(
+      width: ScreenUtil().setWidth(70),
+      height: ScreenUtil().setHeight(45),
+      alignment: Alignment.center,
+      color: Colors.white,
+       child: Text('1'),
     );
   }
 }
