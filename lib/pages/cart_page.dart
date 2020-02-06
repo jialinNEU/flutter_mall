@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provide/provide.dart';
 import '../provide/cart.dart';
+import '../models/cartInfo.dart';
 
 class CartPage extends StatelessWidget{
   @override
@@ -17,9 +19,7 @@ class CartPage extends StatelessWidget{
             return ListView.builder(
               itemCount: cartList.length,
               itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(cartList[index].goodsName),
-                );
+                return CartItem(cartList[index]);
               }
             );
           } else {
@@ -33,5 +33,94 @@ class CartPage extends StatelessWidget{
   Future<String> _getCartInfo(BuildContext context) async {
     await Provide.value<CartProvide>(context).getCartInfo();
     return 'end';
+  }
+}
+
+
+class CartItem extends StatelessWidget {
+  final CartInfoModel item;
+  CartItem(this.item);
+
+  
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.fromLTRB(5.0, 2.0, 5.0, 2.0),
+      padding: EdgeInsets.fromLTRB(5.0, 10.0, 5.0, 10.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          bottom: BorderSide(width: 1, color: Colors.black12),
+        ),
+      ),
+      child: Row(
+        children: <Widget>[
+          _cartCheckBtn(item),
+          _cartGoodsImage(item),
+          _cartGoodsName(item),
+          _cartGoodsPrice(item),
+        ],
+      ),
+    );
+  }
+
+  // 多选按钮
+  Widget _cartCheckBtn(item) {
+    return Container(
+      child: Checkbox(
+        value: true,
+        activeColor: Colors.pink,
+        onChanged: (bool val) {},
+      ),
+    );
+  }
+
+  // 商品图片
+  Widget _cartGoodsImage(item) {
+    return Container(
+      width: ScreenUtil().setWidth(150),
+      padding: EdgeInsets.all(3.0),
+      decoration: BoxDecoration(
+        border: Border.all(width: 1, color: Colors.black12),
+      ),
+      child: Image.network(item.images),
+    );
+  }
+
+  // 商品名称
+  Widget _cartGoodsName(item) {
+    return Container(
+      width: ScreenUtil().setWidth(300),
+      padding: EdgeInsets.all(10),
+      alignment: Alignment.topLeft,
+      child: Column(
+        children: <Widget>[
+          Text(item.goodsName)
+        ],
+      ),
+    );
+  }
+
+  // 商品价格
+  Widget _cartGoodsPrice(item) {
+    return Container(
+      width:ScreenUtil().setWidth(150) ,
+      alignment: Alignment.centerRight,
+      child: Column(
+        children: <Widget>[
+          Text('￥${item.price}'),
+          Container(
+            child: InkWell(
+              onTap: () {},
+              child: Icon(
+                Icons.delete_forever,
+                color: Colors.black26,
+                size: 30,
+              ),
+            ),
+          )
+        ],
+      ),
+    );
   }
 }
