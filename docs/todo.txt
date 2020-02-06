@@ -46,6 +46,8 @@ fluro 页面路由
 
 flutter_html flutter富文本插件
 
+shared_preferences 数据持久化（购物车）
+
 
 *********************************
 【Widgets】
