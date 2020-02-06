@@ -151,12 +151,16 @@ class CartBottom extends StatelessWidget {
       margin: EdgeInsets.all(5.0),
       width: ScreenUtil().setWidth(750),
       color: Colors.white,
-      child: Row(
-        children: <Widget>[
-          _selectAllBtn(context),
-          _totalPriceArea(context),
-          _caculateBtn(context),
-        ],
+      child: Provide<CartProvide>(
+        builder: (context, child, val) {
+          return Row(
+            children: <Widget>[
+              _selectAllBtn(context),
+              _totalPriceArea(context),
+              _caculateBtn(context),
+            ],
+          );
+        }
       ),
     );
   }
@@ -321,3 +325,5 @@ class CartCount extends StatelessWidget {
     );
   }
 }
+
+// start from 60
