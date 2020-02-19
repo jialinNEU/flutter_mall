@@ -6,6 +6,7 @@ import './provide/child_category.dart';
 import './provide/details_info.dart';
 import './provide/cart.dart';
 import './provide/category_goods_list.dart';
+import './provide/currentIndex.dart';
 import './routers/routers.dart';
 import './routers/application.dart';
 
@@ -19,12 +20,14 @@ void main() {
   var categoryGoodsListProvide = CategoryGoodsListProvide();
   var detailsInfoProvide = DetailsInfoProvide();
   var cartProvide = CartProvide();
+  var currentIndexProvide = CurrentIndexProvide();
   var providers = Providers();
   providers
     ..provide(Provider<ChildCategory>.value(childCategory)) // 将 provide 和 ChildCategory 引入程序顶层
     ..provide(Provider<CategoryGoodsListProvide>.value(categoryGoodsListProvide))
     ..provide(Provider<DetailsInfoProvide>.value(detailsInfoProvide))
-    ..provide(Provider<CartProvide>.value(cartProvide));
+    ..provide(Provider<CartProvide>.value(cartProvide))
+    ..provide(Provider<CurrentIndexProvide>.value(currentIndexProvide));
   runApp(
     ProviderNode(
       child: MyApp(),

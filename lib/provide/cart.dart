@@ -23,6 +23,8 @@ class CartProvide with ChangeNotifier {
 
     var isHave = false; // 购物车中是否已经存在此商品 ID
     int indexVal = 0; // 索引
+    totalPrice = 0; // 初始化总价
+    totalGoodsCount = 0; // 初始化总数量
 
     tempList.forEach((item) {
       if (item['goodsId'] == goodsId) {
@@ -30,6 +32,10 @@ class CartProvide with ChangeNotifier {
         tempList[indexVal]['count'] = item['count'] + 1;
         cartList[indexVal].count++;
         isHave = true;
+      }
+      if (item['isCheck']) {
+        totalPrice += (cartList[indexVal].price * cartList[indexVal].count);
+        totalGoodsCount += cartList[indexVal].count;
       }
       indexVal++;
     });
@@ -46,6 +52,8 @@ class CartProvide with ChangeNotifier {
       };
       tempList.add(newGoods);
       cartList.add(new CartInfoModel.fromJson(newGoods));
+      totalPrice += count * price;
+      totalGoodsCount += count;
     }
 
     // 持久化
@@ -107,9 +115,9 @@ class CartProvide with ChangeNotifier {
 
   // 清空购物车
   remove() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.remove('cartInfo');
-    print('清空');
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    // prefs.remove('cartInfo');
+    print('清空购物车 TODO');
     notifyListeners();
   }
 
