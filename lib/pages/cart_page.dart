@@ -70,7 +70,7 @@ class CartItem extends StatelessWidget {
       ),
       child: Row(
         children: <Widget>[
-          _cartCheckBtn(item),
+          _cartCheckBtn(context, item),
           _cartGoodsImage(item),
           _cartGoodsName(item),
           _cartGoodsPrice(context, item),
@@ -80,12 +80,15 @@ class CartItem extends StatelessWidget {
   }
 
   // 多选按钮
-  Widget _cartCheckBtn(item) {
+  Widget _cartCheckBtn(context, item) {
     return Container(
       child: Checkbox(
         value: item.isCheck,
         activeColor: Colors.pink,
-        onChanged: (bool val) {},
+        onChanged: (bool val) {
+          item.isCheck = val;
+          Provide.value<CartProvide>(context).changeCheckState(item);
+        },
       ),
     );
   }
@@ -111,7 +114,7 @@ class CartItem extends StatelessWidget {
       child: Column(
         children: <Widget>[
           Text(item.goodsName),
-          CartCount(),
+          CartCount(item),
         ],
       ),
     );
@@ -166,14 +169,16 @@ class CartBottom extends StatelessWidget {
   }
 
   Widget _selectAllBtn(context) {
-
+    bool isAllCheck = Provide.value<CartProvide>(context).isAllCheck;
     return Container(
       child: Row(
         children: <Widget>[
           Checkbox(
-            value: true,
+            value: isAllCheck,
             activeColor: Colors.pink,
-            onChanged: (bool val) {},
+            onChanged: (bool val) {
+              Provide.value<CartProvide>(context).changeAllCheckBtnState(val);
+            },
           ),
           Text('全选'),
         ],
@@ -257,6 +262,10 @@ class CartBottom extends StatelessWidget {
 
 
 class CartCount extends StatelessWidget {
+
+  var item;
+  CartCount(this.item);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -267,18 +276,20 @@ class CartCount extends StatelessWidget {
       ),
       child: Row(
         children: <Widget>[
-          _reduceItemBtn(),
+          _reduceItemBtn(context),
           _countArea(),
-          _addItemBtn(),
+          _addItemBtn(context),
         ],
       ),
     );
   }
 
   // 减少商品按钮
-  Widget _reduceItemBtn() {
+  Widget _reduceItemBtn(context) {
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        Provide.value<CartProvide>(context).addOrReduceAction(item, 'reduce');
+      },
       child: Container(
         width: ScreenUtil().setWidth(45),
         height: ScreenUtil().setHeight(45),
@@ -296,9 +307,11 @@ class CartCount extends StatelessWidget {
   }
 
   // 添加商品按钮
-  Widget _addItemBtn(){
+  Widget _addItemBtn(context){
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        Provide.value<CartProvide>(context).addOrReduceAction(item, 'add');
+      },
       child: Container(
         width: ScreenUtil().setWidth(45),
         height: ScreenUtil().setHeight(45),
@@ -321,9 +334,7 @@ class CartCount extends StatelessWidget {
       height: ScreenUtil().setHeight(45),
       alignment: Alignment.center,
       color: Colors.white,
-       child: Text('1'),
+       child: Text('${item.count}'),
     );
   }
 }
-
-// start from 60
